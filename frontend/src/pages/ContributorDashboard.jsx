@@ -1,42 +1,74 @@
-import { useEffect, useState } from 'react'
 import ProjectCard from '../components/ProjectCard'
-
-const mockSkills = ['Python', 'React', 'Docker', 'PostgreSQL']
-
-const mockMatches = [
-  { id: 4, name: 'Matched Project A', description: 'Needs a Python backend contributor', priorityScore: 74, busFactorRisk: 'Medium' },
-  { id: 5, name: 'Matched Project B', description: 'React frontend help wanted', priorityScore: 61, busFactorRisk: 'Medium' },
-]
+import { ErrorMessage, EmptyState } from '../components/AsyncStates'
+import { SkeletonGrid } from '../components/Skeleton'
+import useFetch from '../lib/useFetch'
+import { getSkills, getMatches } from '../lib/api'
 
 export default function ContributorDashboard() {
-  const [skills, setSkills] = useState(mockSkills)
-  const [matches, setMatches] = useState(mockMatches)
+  const skillsState = useFetch(getSkills)
+  const matchesState = useFetch(getMatches)
 
-  useEffect(() => {
-    // fetch('/api/skills').then(res => res.json()).then(setSkills)
-    // fetch('/api/matches').then(res => res.json()).then(setMatches)
-  }, [])
+  const skills = skillsState.data || []
+  const matches = matchesState.data || []
 
   return (
     <div>
-      <section className="bg-slate text-white px-6 py-10">
-        <h1 className="text-2xl font-semibold">Your Matches</h1>
-        <p className="mt-2 text-white/80">Based on the skills detected from your GitHub activity.</p>
+      {/* ---- Hero ---- */}
+      <section className="relative overflow-hidden bg-ink text-white">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate via-ink to-ink" />
+        <div className="absolute -top-24 -left-16 w-80 h-80 rounded-full bg-healthy/20 blur-3xl animate-float-slow" />
 
-        <div className="mt-4 flex flex-wrap gap-2">
-          {skills.map(skill => (
-            <span key={skill} className="bg-sage text-ink text-xs font-medium px-3 py-1 rounded-full">
-              {skill}
-            </span>
-          ))}
+        <div className="container-page relative py-14 md:py-18">
+          <div className="animate-fade-up">
+            <h1 className="text-3xl md:text-4xl font-bold">Your Matches</h1>
+            <p className="mt-3 text-white/70 max-w-xl leading-relaxed">
+              Based on the skills detected from your GitHub activity.
+            </p>
+
+            {skillsState.loading ? (
+              <div className="mt-6 flex gap-2">
+                {[0, 1, 2, 3].map(i => (
+                  <div key={i} className="skeleton h-8 w-20 !rounded-full" />
+                ))}
+              </div>
+            ) : skillsState.error ? (
+              <p className="mt-5 text-[#F0A08C] text-sm">{skillsState.error.message}</p>
+            ) : (
+              <div className="mt-6 flex flex-wrap gap-2.5">
+                {skills.map(skill => (
+                  <span
+                    key={skill}
+                    className="chip bg-sage text-ink font-semibold shadow-[0_2px_10px_rgba(143,191,159,0.3)]"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
-      <div className="p-6">
-        <h2 className="text-lg font-semibold text-ink mb-4">Projects that need your skills</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {matches.map(p => <ProjectCard key={p.id} project={p} />)}
-        </div>
+      {/* ---- Matches ---- */}
+      <div className="container-page py-14">
+        <h2 className="text-2xl font-bold text-ink mb-2">Projects that need your skills</h2>
+        <p className="text-slate mb-8">Open issues matched to what you already know.</p>
+
+        {matchesState.loading ? (
+          <SkeletonGrid count={2} />
+        ) : matchesState.error ? (
+          <ErrorMessage error={matchesState.error} onRetry={matchesState.retry} />
+        ) : matches.length === 0 ? (
+          <EmptyState message="No matches yet — connect your GitHub to get suggestions." />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {matches.map((p, i) => (
+              <div key={p.id} className="animate-fade-up" style={{ animationDelay: `${i * 60}ms` }}>
+                <ProjectCard project={p} />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

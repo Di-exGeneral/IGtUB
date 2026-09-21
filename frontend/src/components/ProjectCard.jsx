@@ -1,27 +1,35 @@
 import { Link } from 'react-router-dom'
-
-function getStatus(score, busFactorRisk) {
-  if (busFactorRisk === 'High' || score < 50) return { label: 'At Risk', color: 'bg-red-500' }
-  if (busFactorRisk === 'Medium' || score < 70) return { label: 'Needs Help', color: 'bg-yellow-500' }
-  return { label: 'Healthy', color: 'bg-sage' }
-}
+import { getStatus } from '../lib/status'
+import ScoreRing from './ScoreRing'
+import { AvatarStack } from './Avatar'
 
 export default function ProjectCard({ project }) {
   const status = getStatus(project.priorityScore, project.busFactorRisk)
+  const ringStatus = status.label === 'At Risk' ? 'danger' : status.label === 'Needs Help' ? 'warning' : 'healthy'
 
   return (
-    <Link
-      to={`/project/${project.id}`}
-      className="block bg-slate text-white rounded-lg p-5 hover:bg-teal transition-colors relative"
-    >
-      <span className={`absolute top-3 right-3 text-xs font-medium px-2 py-1 rounded ${status.color} text-ink`}>
-        {status.label}
-      </span>
-      <h3 className="font-semibold text-lg pr-20">{project.name}</h3>
-      <p className="text-sm text-white/80 mt-1">{project.description}</p>
-      <span className="inline-block mt-3 bg-white/10 text-white text-xs font-medium px-2 py-1 rounded">
-        Score: {project.priorityScore}
-      </span>
+    <Link to={`/project/${project.id}`} className="card-link group">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="font-display font-semibold text-ink leading-snug group-hover:text-teal transition-colors">
+              {project.name}
+            </h3>
+            {project.archived && (
+              <span className="badge bg-slate/10 text-slate">Archived</span>
+            )}
+          </div>
+          <p className="text-sm text-slate mt-1.5 line-clamp-2 leading-relaxed">
+            {project.description}
+          </p>
+        </div>
+        <ScoreRing score={project.priorityScore} status={ringStatus} size={52} />
+      </div>
+
+      <div className="flex items-center justify-between mt-5">
+        <AvatarStack names={project.contributors} />
+        <span className={`badge ${status.className}`}>{status.label}</span>
+      </div>
     </Link>
   )
 }
