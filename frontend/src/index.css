@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+/* ============================================================
+   IGtUB Design System
+   ============================================================ */
+
+@theme {
+  --color-ink: #151C26;    /* deepest navy — nav, footer, hero base */
+  --color-slate: #22333F;  /* panel navy — heroes, dark cards */
+  --color-teal: #3F6C77;   /* mid blue-green — accents, borders */
+  --color-sage: #8FBF9F;   /* warm sage — primary accent */
+
+  --color-healthy: #4C9A6A;
+  --color-warning: #D9A441;
+  --color-danger: #C4553B;
+
+  --font-display: "Sora", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-body);
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-[#F6F8F7] text-ink antialiased;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+  ::selection {
+    @apply bg-sage/40 text-ink;
+  }
+}
+
+@layer components {
+  /* ---- Layout ---- */
+  .container-page {
+    @apply mx-auto max-w-6xl px-6;
+  }
+
+  /* ---- Gradient text ---- */
+  .text-gradient {
+    @apply bg-gradient-to-r from-sage via-emerald-300 to-sage bg-clip-text text-transparent;
+  }
+
+  /* ---- Cards ---- */
+  .card {
+    @apply bg-white border border-teal/15 rounded-2xl shadow-[0_1px_3px_rgba(21,28,38,0.06)];
+  }
+  .card-link {
+    @apply relative block bg-white border border-teal/15 rounded-2xl
+      shadow-[0_1px_3px_rgba(21,28,38,0.06)] p-5 text-ink
+      transition duration-200
+      hover:border-teal/40 hover:shadow-[0_10px_30px_-10px_rgba(21,28,38,0.18)]
+      hover:-translate-y-1;
+  }
+  .stat-card {
+    @apply bg-white border border-teal/15 rounded-2xl shadow-[0_1px_3px_rgba(21,28,38,0.06)] p-5;
+  }
+  .stat-label {
+    @apply text-xs font-semibold uppercase tracking-wider text-teal;
+  }
+
+  /* ---- Buttons ---- */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl
+      font-medium transition select-none bg-sage text-ink
+      shadow-[0_4px_14px_rgba(143,191,159,0.35)]
+      hover:shadow-[0_6px_20px_rgba(143,191,159,0.5)] hover:brightness-105
+      active:scale-[0.98]
+      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal
+      disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl
+      font-medium transition select-none border border-teal/40 text-ink
+      hover:border-teal hover:bg-teal/5 active:scale-[0.98]
+      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal
+      disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-on-dark {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl
+      font-medium transition select-none bg-sage text-ink
+      shadow-[0_4px_14px_rgba(143,191,159,0.35)]
+      hover:shadow-[0_6px_20px_rgba(143,191,159,0.5)] hover:brightness-105
+      active:scale-[0.98]
+      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage
+      disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-outline-dark {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl
+      font-medium transition select-none border border-white/25 text-white
+      hover:bg-white/10 hover:border-white/40 active:scale-[0.98]
+      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white;
+  }
+
+  /* ---- Badges & chips ---- */
+  .badge {
+    @apply inline-block text-xs font-semibold px-2.5 py-1 rounded-full;
+  }
+  .chip {
+    @apply inline-block text-xs font-medium px-3 py-1.5 rounded-full;
+  }
+
+  /* ---- Forms ---- */
+  .field-label {
+    @apply block text-sm font-medium text-ink mb-1.5;
+  }
+  .field-input {
+    @apply w-full border border-teal/30 rounded-xl px-3.5 py-2.5 text-ink bg-white
+      placeholder:text-slate/40
+      focus:outline-none focus:border-teal focus:ring-4 focus:ring-teal/10
+      disabled:opacity-50 transition;
+  }
+
+  /* ---- Nav ---- */
+  .nav-link {
+    @apply text-sm text-white/70 hover:text-white transition-colors;
+  }
+  .nav-link-active {
+    @apply text-sage font-medium;
+  }
+  .link-quiet {
+    @apply text-teal text-sm hover:underline;
+  }
+
+  /* ---- Skeletons ---- */
+  .skeleton {
+    border-radius: 0.5rem;
+    background: linear-gradient(
+      100deg,
+      rgba(63, 108, 119, 0.08) 40%,
+      rgba(63, 108, 119, 0.18) 50%,
+      rgba(63, 108, 119, 0.08) 60%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite linear;
+  }
+}
+
+/* ---- Animations ---- */
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, -20px); }
+}
+.animate-fade-up {
+  animation: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-float-slow {
+  animation: float-slow 9s ease-in-out infinite;
+}
